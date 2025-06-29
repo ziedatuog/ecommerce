@@ -45,6 +45,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public void sentLoginOtp(String email) throws Exception {
         String SIGNING_PREFIX = "signin";
+        String SELLER_PREFIX = "seller_";
 
         if (email.startsWith(SIGNING_PREFIX)) {
             email = email.substring(SIGNING_PREFIX.length());
