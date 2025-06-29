@@ -9,6 +9,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
 import java.util.Date; // Correct import
 import java.util.Collection;
 import java.util.HashSet;
@@ -17,9 +18,12 @@ import java.util.Set;
 
 @Service
 public class JwtProvider {
-//    SecretKey key = Keys.hmacShaKeyFor(JWT_CONSTANT.SECRET_KEY.getBytes());
-SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.HS256); // Auto-generates a 256-bit key
+    SecretKey key = Keys.hmacShaKeyFor(JWT_CONSTANT.SECRET_KEY.getBytes());
+//SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.HS256); // Auto-generates a 256-bit key
+//SecretKey key = Keys.hmacShaKeyFor(JWT_CONSTANT.SECRET_KEY.getBytes(StandardCharsets.UTF_8));
+
     public String generateToken(Authentication auth) {
+
         Collection<?extends GrantedAuthority> authorities=auth.getAuthorities();
         String roles=populateAuthorities(authorities);
 
