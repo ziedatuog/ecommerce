@@ -1,10 +1,9 @@
 package com.northEthio.controller;
 
 import com.northEthio.domain.USER_ROLE;
-import com.northEthio.model.User;
-import com.northEthio.model.VerificationCode;
 import com.northEthio.repository.ApiResponse;
 import com.northEthio.repository.UserRepository;
+import com.northEthio.request.LoginOtpRequest;
 import com.northEthio.request.LoginRequest;
 import com.northEthio.response.AuthResponse;
 import com.northEthio.response.SignupRequest;
@@ -39,8 +38,9 @@ public class AuthController {
     }
 
     @PostMapping("/sent/login-signup-otp")
-    public ResponseEntity<ApiResponse> sentOtpHandler(@RequestBody VerificationCode req) throws Exception {
-         authService.sentLoginOtp(req.getEmail());
+    public ResponseEntity<ApiResponse> sentOtpHandler(
+            @RequestBody LoginOtpRequest req) throws Exception {
+         authService.sentLoginOtp(req.getEmail(), req.getRole());
 
         ApiResponse res = new ApiResponse();
 

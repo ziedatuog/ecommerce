@@ -3,6 +3,7 @@ package com.northEthio.service.impl;
 import com.northEthio.config.JwtProvider;
 import com.northEthio.domain.AccountStatus;
 import com.northEthio.domain.USER_ROLE;
+import com.northEthio.exception.SellerException;
 import com.northEthio.model.Address;
 import com.northEthio.model.Seller;
 import com.northEthio.repository.AddressRepository;
@@ -26,7 +27,7 @@ public class SellerServiceImpl implements SellerService {
     @Override
     public Seller getSellerProfile(String jwt) throws Exception {
 
-        String email = jwtProvider.getEmailFromToken(jwt);
+        String email = jwtProvider.getEmailFromJwtToken(jwt);
         return this.getSellerByEmail(email);
     }
 
@@ -55,10 +56,10 @@ public class SellerServiceImpl implements SellerService {
     }
 
     @Override
-    public Seller getSellerById(Long id) throws Exception {
+    public Seller getSellerById(Long id) throws SellerException {
 
         return sellerRepository.findById(id)
-                .orElseThrow(()->new Exception("seller not found with id "+id)
+                .orElseThrow(()->new SellerException("seller not found with id "+id)
                 );
     }
 
@@ -74,7 +75,7 @@ public class SellerServiceImpl implements SellerService {
 
     @Override
     public List<Seller> getAllSellers(AccountStatus status) {
-        return sellerRepository.findAccountStatus(status);
+        return sellerRepository.findByAccountStatus(status);
     }
 
     @Override
@@ -147,14 +148,14 @@ public class SellerServiceImpl implements SellerService {
     }
 
     @Override
-    public void deleteSeller(Long id) throws Exception {
+    public void deleteSeller(Long id) throws SellerException {
         Seller seller = getSellerById(id);
         sellerRepository.delete(seller);
 
     }
 
     @Override
-    public Seller verifiyEmail(String email, String otp) throws Exception {
+    public Seller verifyEmail(String email, String otp) throws Exception {
         Seller seller = getSellerByEmail(email);
         seller.setIsEmailVerified(true);
         return sellerRepository.save(seller);

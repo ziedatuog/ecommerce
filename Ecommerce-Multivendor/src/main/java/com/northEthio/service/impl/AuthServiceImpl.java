@@ -3,9 +3,11 @@ package com.northEthio.service.impl;
 import com.northEthio.config.JwtProvider;
 import com.northEthio.domain.USER_ROLE;
 import com.northEthio.model.Cart;
+import com.northEthio.model.Seller;
 import com.northEthio.model.User;
 import com.northEthio.model.VerificationCode;
 import com.northEthio.repository.CartRepository;
+import com.northEthio.repository.SellerRepository;
 import com.northEthio.repository.UserRepository;
 import com.northEthio.request.LoginRequest;
 import com.northEthio.response.AuthResponse;
@@ -40,20 +42,35 @@ public class AuthServiceImpl implements AuthService {
     private final VerificationCodeRepository verificationCodeRepository;
     private final EmailService emailService;
     private final CustomUserServiceImpl customUserService;
+    private final SellerRepository sellerRepository;
 
     @Override
-    public void sentLoginOtp(String email) throws Exception {
-        String SIGNING_PREFIX = "signin";
-        String SELLER_PREFIX = "seller_";
-
+    public void sentLoginOtp(String email, USER_ROLE role) throws Exception {
+        String SIGNING_PREFIX = "signin_";
+//        String SELLER_PREFIX = "seller_";
         if (email.startsWith(SIGNING_PREFIX)) {
             email = email.substring(SIGNING_PREFIX.length());
 
-            User user = userRepository.findByEmail(email);
-            if(user == null){
-                throw new Exception("user not exist with provided email");
+            if (role.equals (USER_ROLE.ROLE_SELLER)) {
+                Seller seller = sellerRepository.findByEmail(email);
+                if(seller == null){
+                    throw new Exception("seller not found");
+                }
+
             }
+            else {
+                System.out.println("email: " + email);
+                User user = userRepository.findByEmail(email);
+                if(user == null){
+                    throw new Exception("user not exist with provided email");
+                }
+            }
+
         }
+
+
+
+
 
         VerificationCode isExist = verificationCodeRepository.findByEmail(email);
 
@@ -113,7 +130,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public AuthResponse signing(LoginRequest req) {
+    public AuthResponse signing(LoginRequest req) throws Exception {
 
         String username = req.getEmail();
         String otp = req.getOtp();
@@ -134,12 +151,16 @@ public class AuthServiceImpl implements AuthService {
         return authResponse;
     }
 
-    private Authentication authenticate(String username, String otp) {
-
+    private Authentication authenticate(String username, String otp) throws Exception {
         UserDetails userDetails = customUserService.loadUserByUsername(username);
+        String SELLER_PREFIX = "seller_";
+        if(username.startsWith(SELLER_PREFIX)){
+            username = username.substring(SELLER_PREFIX.length());
+        }
+
 
         if(userDetails==null){
-            throw new BadCredentialsException("invalid username ");
+            throw new Exception();
         }
         VerificationCode verificationCode = verificationCodeRepository.findByEmail(username);
 

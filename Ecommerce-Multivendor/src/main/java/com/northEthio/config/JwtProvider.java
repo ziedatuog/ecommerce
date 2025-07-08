@@ -38,7 +38,7 @@ public class JwtProvider {
 //        return null;
     }
 
-    public String getEmailFromToken(String jwt) {
+    public String getEmailFromJwtToken(String jwt) {
         jwt = jwt.substring(7);
         Claims claims = Jwts.parser()
                 .verifyWith(key)
@@ -57,4 +57,7 @@ public class JwtProvider {
         }
         return String.join(",", auths);
     }
+
+
+
 }
